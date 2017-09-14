@@ -62,13 +62,16 @@ class Aluno extends Pessoa implements Graduacao {
     }
 
     set matricula(matricula: string) {
+        if (matricula == "" || matricula == null)
+            throw new Error("Deixa de ser burro, matrícula não poder ser nula ou vazia. lesado!!!");
         this._matricula = matricula;
     }
 
     toString() {
-        return `Matricula: ${this.matricula}
-                Nome: ${this.nome} ${this.sobrenome}
-                Idade: ${this.idade}`;
+        return `
+        Matricula: ${this.matricula}
+        Nome: ${this.nome} ${this.sobrenome}
+        Idade: ${this.idade}`;
     }
 
     realizarAutoMatricula(disciplina: Disciplina): boolean {
@@ -80,7 +83,15 @@ class Aluno extends Pessoa implements Graduacao {
 class Main {
     public static main() {
         let leo: Aluno = new Aluno("378674", "Leo", "Jaimesson", 50);
-        console.log(leo);
+        let dados = prompt("Digite seus dados:").split(" ");
+        let gleydson: Aluno = new Aluno(dados[0], dados[1], dados[2], parseInt(dados[3]));
+        console.log(leo.toString());
+        try {
+            leo.matricula = "";
+        } catch (e) {
+            console.log(leo.toString());    
+        }
+        console.log(gleydson.toString());
     }
 }
 
