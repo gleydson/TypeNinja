@@ -51,7 +51,7 @@ class Disciplina {
     }
 }
 
-class Aluno extends Pessoa implements Graduacao {
+class Aluno extends Pessoa {
 
     constructor(private _matricula: string, nome: string, sobrenome: string, idade: number) {
         super(nome, sobrenome, idade);
@@ -74,6 +74,38 @@ class Aluno extends Pessoa implements Graduacao {
         Idade: ${this.idade}`;
     }
 
+}
+
+class GAluno implements Graduacao {
+
+    private listAlunos: Set<Aluno>
+
+    constructor() {
+        this.listAlunos = new Set<Aluno>();
+    }
+
+    getAluno(matricula: string): Aluno {
+        for (let aluno of this.listAlunos)
+            if (aluno.matricula == matricula)
+                return aluno;
+        return null;
+    }
+
+    getAlunoAll(): Array<Aluno> {
+        let list: Array<Aluno> = new Array<Aluno>();
+        for (let aluno of this.listAlunos)
+            list.push(aluno);
+        return list;
+    }
+
+    criarAluno(aluno: Aluno): boolean {
+        if (aluno != null) {
+            this.listAlunos.add(aluno);
+            return true;
+        }
+        return false;
+    }
+
     realizarAutoMatricula(disciplina: Disciplina): boolean {
         return true;
     }
@@ -82,14 +114,17 @@ class Aluno extends Pessoa implements Graduacao {
 
 class Main {
     public static main() {
-        let leo: Aluno = new Aluno("378674", "Leo", "Jaimesson", 50);
+        let gAlunos:GAluno = new GAluno();
+        gAlunos.criarAluno(new Aluno("378674", "Leo", "Jaimesson", 50));
         let dados = prompt("Digite seus dados:").split(" ");
-        let gleydson: Aluno = new Aluno(dados[0], dados[1], dados[2], parseInt(dados[3]));
+        gAlunos.criarAluno(new Aluno(dados[0], dados[1], dados[2], parseInt(dados[3])));
+        let leo = gAlunos.getAluno("378674");
+        let gleydson = gAlunos.getAluno(dados[0]);
         console.log(leo.toString());
         try {
             leo.matricula = "";
         } catch (e) {
-            console.log(leo.toString());    
+            console.log(leo.toString());
         }
         console.log(gleydson.toString());
     }
