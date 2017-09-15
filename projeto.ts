@@ -63,7 +63,7 @@ class Aluno extends Pessoa {
 
     set matricula(matricula: string) {
         if (matricula == "" || matricula == null)
-            throw new Error("Deixa de ser burro, matrícula não poder ser nula ou vazia. lesado!!!");
+            throw new Error("Matrícula inválida!                                       ");
         this._matricula = matricula;
     }
 
@@ -85,25 +85,23 @@ class GAluno implements Graduacao {
     }
 
     getAluno(matricula: string): Aluno {
-        for (let aluno of this.listAlunos)
-            if (aluno.matricula == matricula)
-                return aluno;
+        for (let i = 0; i < this.listAlunos.size; i++)
+            if (this.listAlunos[i].matricula == matricula)
+                return this.listAlunos[i];
         return null;
     }
 
     getAlunoAll(): Array<Aluno> {
         let list: Array<Aluno> = new Array<Aluno>();
-        for (let aluno of this.listAlunos)
-            list.push(aluno);
+        for (let i = 0; i < this.listAlunos.size; i++)
+            list.push(this.listAlunos[i]);
         return list;
     }
 
-    criarAluno(aluno: Aluno): boolean {
-        if (aluno != null) {
-            this.listAlunos.add(aluno);
-            return true;
-        }
-        return false;
+    criarAluno(aluno: Aluno): void {
+        if (aluno == null)
+            throw new Error("Aluno inválido!");
+        this.listAlunos.add(aluno);
     }
 
     realizarAutoMatricula(disciplina: Disciplina): boolean {
@@ -114,7 +112,7 @@ class GAluno implements Graduacao {
 
 class Main {
     public static main() {
-        let gAlunos:GAluno = new GAluno();
+        let gAlunos: GAluno = new GAluno();
         gAlunos.criarAluno(new Aluno("378674", "Leo", "Jaimesson", 50));
         let dados = prompt("Digite seus dados:").split(" ");
         gAlunos.criarAluno(new Aluno(dados[0], dados[1], dados[2], parseInt(dados[3])));
