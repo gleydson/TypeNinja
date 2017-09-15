@@ -63,7 +63,7 @@ class Aluno extends Pessoa {
 
     set matricula(matricula: string) {
         if (matricula == "" || matricula == null)
-            throw new Error("Matrícula inválida!                                       ");
+            throw new Error("Matrícula inválida!");
         this._matricula = matricula;
     }
 
