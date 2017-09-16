@@ -48,6 +48,8 @@ class Vagao {
     }
 
     desembarcar(passageiro:Passageiro):boolean {
+        if(this.procurarPassageiro(passageiro.id) == null)
+            return false;
         if(passageiro != null)
             return false;
         let i = this.passageiros.indexOf(passageiro);
