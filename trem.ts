@@ -24,57 +24,55 @@ class Vagao {
     //private passageiros:Passageiro[];    /* Mesma coisa! */
     private ocupacao: number;
 
-    constructor(private capacidade:number) {
+    public constructor(private capacidade:number) {
         this.passageiros = new Array<Passageiro>();
         this.ocupacao = 0;
     }
 
-    getEspacoLivre():number {
+    public getEspacoLivre():number {
         return this.capacidade - this.ocupacao;
     }
 
-    getNumPassageiros():number {
+    public getNumPassageiros():number {
         return this.ocupacao;
     }
 
-    embarcar(passageiro:Passageiro):boolean {
+    public embarcar(passageiro:Passageiro) {
         if(this.ocupacao == this.capacidade)
-            return false;
+            throw new Error(`Capacidade atingida!`);
         if(passageiro == null)
-            return false;
+            throw new Error(`Passageiro inválido!`);
         this.passageiros.push(passageiro);
         this.ocupacao++;
-        return true;
     }
 
-    desembarcar(passageiro:Passageiro):boolean {
+    public desembarcar(passageiro:Passageiro) {
         if(this.procurarPassageiro(passageiro.id) == null)
-            return false;
-        if(passageiro != null)
-            return false;
+            throw new Error(`Passageiro não encontrado!`);
+        if(passageiro == null)
+            throw new Error(`Passageiro inválido!`);;
         let i = this.passageiros.indexOf(passageiro);
         this.passageiros.splice(i, 1);
         this.ocupacao--;
-        return true;
     }
 
-    procurarPassageiro(id:number):Passageiro {
+    public procurarPassageiro(id:number):Passageiro {
         for(let passageiro of this.passageiros)
             if(passageiro.id == id)
                 return passageiro;
         return null;
     }
 
-    toString():string {
+    public toString():string {
         let vagao:string;
         vagao = "[ ";
         for(let i = 0; i < this.capacidade; i++) {
             if(this.passageiros[i] != null)
-                vagao += this.passageiros[i].nome + " ";
+                vagao += this.passageiros[i].id + " - " + this.passageiros[i].nome + " ";
             else
-                vagao += "- ";
+                vagao += "| ";
         }
-        vagao = "]";
+        vagao += "]";
         return vagao;
     }
 }
@@ -84,70 +82,114 @@ class Trem {
     private vagoes:Vagao[];
     private ocupacaoVagoes:number;
 
-    constructor(private limiteVagoes:number) {
+    public constructor(private limiteVagoes:number) {
         this.vagoes = [];
         this.ocupacaoVagoes = 0;
     }
 
-    addVagao(vagao:Vagao):boolean {
+    public addVagao(capacidade:number) {
+        if(capacidade <= 0)
+            throw new Error(`Valor da inválido!`);
+        if (capacidade == null)
+            throw new Error(`Valor da capacidade inválido!`);
         if (this.limiteVagoes == this.ocupacaoVagoes)
-            return false;
-        this.vagoes.push(vagao);
+            throw new Error(`Capacidade atingida!`);
+        this.vagoes.push(new Vagao(capacidade));
         this.ocupacaoVagoes++;
-        return true;
+        console.log(`Vagão adicionado com sucesso!`);
     }
 
-    getEspacoLivre(): number {
+    public getEspacoLivre(): number {
         let count;
         for(let vagao of this.vagoes)
             count += vagao.getEspacoLivre();
         return count;
     }
 
-    getNumPassageiros(): number {
+    private getNumPassageiros(): number {
         let count;
         for (let vagao of this.vagoes)
             count += vagao.getNumPassageiros();
         return count;
     }
 
-    embarcar(passageiro: Passageiro):boolean {
+    public embarcar(passageiro: Passageiro):void {
         for(let vagao of this.vagoes)
             if(vagao.getEspacoLivre() > 0) {
-                vagao.embarcar(passageiro);
-                return true;
+                try {
+                    vagao.embarcar(passageiro);
+                    console.log(`Passageiro embarcado com sucesso!`);
+                } catch (e) {
+                    console.log("Error: " + e);
+                }
             }
-        return false;
     }
 
-    desembarcar(passageiro: Passageiro):boolean {
+    public desembarcar(id: number):void {
+        let passageiro:Passageiro = this.procurarPassageiro(id);
         for(let vagao of this.vagoes)
-            if(vagao.procurarPassageiro(passageiro.id) != null) {
-                vagao.desembarcar(passageiro);
-                return true;
+            if(passageiro != null) {
+                try {
+                    vagao.desembarcar(passageiro);
+                    console.log(`Passageiro desembarcado com sucesso!`);
+                } catch (e) {
+                    console.log("Error: " + e);
+                }
             }
-        return false;
     }
 
-    procurarPassageiro(id: number): Passageiro {
+    private procurarPassageiro(id: number): Passageiro {
         for (let vagao of this.vagoes)
             if(vagao.procurarPassageiro(id) != null)
                 return vagao.procurarPassageiro(id);
         return null;
     }
 
-    toString(): string {
+    public toString(): string {
         let trem: string = "< ";
         for (let v of this.vagoes)
             trem += v.toString() + " ";
-        trem = ">";
+        trem += ">";
         return trem;
     }
 }
 
 class Main {
+    static nextId:number = 1;
     static main() {
-        /* TODO */
+        let t: Trem;
+        while(true) {
+            let command = prompt("Digite seu comando:").split(" ");
+            let key = command[0];
+            switch (key) {
+                case "iniciarTrem":
+                    t = new Trem(parseInt(command[1]));
+                    console.log("Trem criado com sucesso!");
+                    break;
+                case "addVagao":
+                    try {
+                        t.addVagao(parseInt(command[1]));
+                    } catch (error) {
+                        console.log(error);
+                    }
+                    break;
+                case "getEspacoLivre":
+                    console.log(t.getEspacoLivre() + "espaços livres.");
+                    break;
+                case "embarcar":
+                    t.embarcar(new Passageiro(Main.nextId, command[1]));
+                    Main.nextId++;
+                    break;
+                case "desembarque":
+                    t.desembarcar(parseInt(command[1]));
+                    break;
+                case "show":
+                    console.log(t.toString());
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 }
 
