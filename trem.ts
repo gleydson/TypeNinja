@@ -37,7 +37,7 @@ class Vagao {
         return this.ocupacao;
     }
 
-    public embarcar(passageiro:Passageiro) {
+    public embarcar(passageiro:Passageiro):void {
         if(this.ocupacao == this.capacidade)
             throw new Error(`Capacidade atingida!`);
         if(passageiro == null)
@@ -46,7 +46,7 @@ class Vagao {
         this.ocupacao++;
     }
 
-    public desembarcar(passageiro:Passageiro) {
+    public desembarcar(passageiro: Passageiro): void {
         if(this.procurarPassageiro(passageiro.id) == null)
             throw new Error(`Passageiro não encontrado!`);
         if(passageiro == null)
@@ -68,9 +68,9 @@ class Vagao {
         vagao = "[ ";
         for(let i = 0; i < this.capacidade; i++) {
             if(this.passageiros[i] != null)
-                vagao += this.passageiros[i].id + " - " + this.passageiros[i].nome + " ";
+                vagao += this.passageiros[i].id + "|" + this.passageiros[i].nome + " ";
             else
-                vagao += "| ";
+                vagao += "- ";
         }
         vagao += "]";
         return vagao;
@@ -87,7 +87,7 @@ class Trem {
         this.ocupacaoVagoes = 0;
     }
 
-    public addVagao(capacidade:number) {
+    public addVagao(capacidade:number):void {
         if(capacidade <= 0)
             throw new Error(`Valor da inválido!`);
         if (capacidade == null)
@@ -119,6 +119,7 @@ class Trem {
                 try {
                     vagao.embarcar(passageiro);
                     console.log(`Passageiro embarcado com sucesso!`);
+                    return;
                 } catch (e) {
                     console.log("Error: " + e);
                 }
@@ -154,7 +155,7 @@ class Trem {
     }
 }
 
-class Main {
+class Exec {
     static nextId:number = 1;
     static main() {
         let t: Trem;
@@ -177,8 +178,8 @@ class Main {
                     console.log(t.getEspacoLivre() + "espaços livres.");
                     break;
                 case "embarcar":
-                    t.embarcar(new Passageiro(Main.nextId, command[1]));
-                    Main.nextId++;
+                    t.embarcar(new Passageiro(Exec.nextId, command[1]));
+                    Exec.nextId++;
                     break;
                 case "desembarque":
                     t.desembarcar(parseInt(command[1]));
@@ -193,4 +194,4 @@ class Main {
     }
 }
 
-Main.main();
+Exec.main();
